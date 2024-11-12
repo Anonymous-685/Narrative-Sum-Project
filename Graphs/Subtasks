@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data for the subtasks
-subtasks = ['Relevance', 'Accuracy/consistancy', 'Coherance', 'Fluency']
+subtasks = ['Conflict', 'Unique', 'Holistic', 'Overlapping']
 openai_subtask_scores = [3.717613636, 3.685227273, 3.680113636, 
 3.740909091]
 google_palm_subtask_scores = [3.470959596, 3.419191919, 3.425505051, 
