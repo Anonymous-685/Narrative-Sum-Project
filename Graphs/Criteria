@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data for the LLMs
-categories = ['Relevance', 'Accuracy/consistancy', 'Coherance', 'Fluency', 
+categories = ['Relevance', 'Accuracy/consistancy', 'Coherance', 'Fluency',
 'Specialty']
 
 # Scores for each LLM
-openai_scores = [3.717613636, 3.685227273, 3.680113636, 3.740909091, 
+openai_scores = [3.717613636, 3.685227273, 3.680113636, 3.740909091,
 3.339583333]
-google_palm_scores = [3.470959596, 3.419191919, 3.425505051, 3.445707071, 
+google_palm_scores = [3.470959596, 3.419191919, 3.425505051, 3.445707071,
 3.029040404]
-metaai_llama2_scores = [3.842668622, 3.428372434, 3.413343109, 3.48973607, 
+metaai_llama2_scores = [3.842668622, 3.428372434, 3.413343109, 3.48973607,
 3.468035191]
 
 # Set the figure size
@@ -22,11 +22,11 @@ plt.figure(figsize=(10, 5))
 x = np.arange(len(categories))
 width = 0.2
 
-bars1 = plt.bar(x - width, openai_scores, color='blue', alpha=0.7, 
+bars1 = plt.bar(x - width, openai_scores, color='blue', alpha=0.7,
 width=width)
-bars2 = plt.bar(x, google_palm_scores, color='red', alpha=0.7, 
+bars2 = plt.bar(x, google_palm_scores, color='red', alpha=0.7,
 width=width)
-bars3 = plt.bar(x + width, metaai_llama2_scores, 
+bars3 = plt.bar(x + width, metaai_llama2_scores,
 color='green', alpha=0.7, width=width)
 
 # Set y-axis limits
@@ -34,18 +34,18 @@ plt.ylim(1, 5)
 
 # Add title and labels
 plt.title('Comparison of LLMs Criterias', fontsize=20)
-plt.xlabel('Criteria')
-plt.ylabel('Scores (1-5 scale)')
+plt.xlabel('Criteria', fontsize = 15)
+plt.ylabel('Scores (1-5 scale)', fontsize = 15)
 
 # Add grid lines
 plt.grid(axis='y', linestyle='--', linewidth=0.5)
 
 
 # Set x-axis ticks to match the categories
-plt.xticks(x, categories)
+plt.xticks(x, categories, fontsize = 12)
 
 # Add legend
-plt.legend([bars1[0], bars2[0], bars3[0]], ['OpenAI GTP', 'Google PaLM', 
-'MetaAI Llama2'])
+plt.legend([bars1[0], bars2[0], bars3[0]], ['OpenAI GPT', 'Google PaLM',
+'MetaAI Llama'])
 
 plt.show()
