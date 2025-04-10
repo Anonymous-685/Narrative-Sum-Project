@@ -5,12 +5,9 @@ import numpy as np
 
 # Data for the subtasks
 subtasks = ['Conflict', 'Unique', 'Holistic', 'Overlapping']
-openai_subtask_scores = [3.717613636, 3.685227273, 3.680113636, 
-3.740909091]
-google_palm_subtask_scores = [3.470959596, 3.419191919, 3.425505051, 
-3.445707071]
-metaai_llama2_subtask_scores = [3.842668622, 3.428372434, 3.413343109, 
-3.48973607]
+openai_subtask_scores = [3.732272727, 4.045333333, 3.965, 3.868]
+google_palm_subtask_scores = [3.848888889, 3.527777778, 3.97, 3.428888889]
+metaai_llama2_subtask_scores = [4.163548387, 3.683333333, 3.76, 3.438]
 
 # Set the figure size
 plt.figure(figsize=(10, 5))
@@ -19,12 +16,12 @@ plt.figure(figsize=(10, 5))
 x = np.arange(len(subtasks))
 width = 0.2
 
-bars1 = plt.bar(x - width, openai_subtask_scores, color='blue', alpha=0.7, 
+bars1 = plt.bar(x - width, openai_subtask_scores, color='blue', alpha=0.7,
 
 width=width)
-bars2 = plt.bar(x, google_palm_subtask_scores, color='red', alpha=0.7, 
+bars2 = plt.bar(x, google_palm_subtask_scores, color='red', alpha=0.7,
 width=width)
-bars3 = plt.bar(x + width, metaai_llama2_subtask_scores, 
+bars3 = plt.bar(x + width, metaai_llama2_subtask_scores,
 color='green', alpha=0.7, width=width)
 
 # Set y-axis limits
@@ -32,18 +29,18 @@ plt.ylim(1, 5)
 
 # Add title and labels
 plt.title('Comparison of LLMs Subtasks', fontsize=20)
-plt.xlabel('Subtask')
-plt.ylabel('Scores (1-5 scale)')
+plt.xlabel('Subtask', fontsize = 15)
+plt.ylabel('Scores (1-5 scale)', fontsize = 15)
 
 # Add grid lines
 plt.grid(axis='y', linestyle='--', linewidth=0.5)
 
 
 # Set x-axis ticks to match the subtasks
-plt.xticks(x, subtasks)
+plt.xticks(x, subtasks, fontsize = 15)
 
 # Add legend
-plt.legend([bars1[0], bars2[0], bars3[0]], ['OpenAI GTP', 'Google PaLM', 
-'MetaAI Llama2'])
+plt.legend([bars1[0], bars2[0], bars3[0]], ['OpenAI GPT', 'Google PaLM',
+'MetaAI Llama'])
 
 plt.show()
