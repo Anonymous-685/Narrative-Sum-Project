@@ -1,0 +1,170 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from google.colab import files
+import os
+
+# ============================================
+# Load data
+# ============================================
+IN_PATH = "Path"
+OUT_DIR = "Path"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+df = pd.read_csv(IN_PATH)
+
+# Basic checks
+required_cols = {"llm", "subtask", "metric", "level", "score"}
+missing = required_cols - set(df.columns)
+if missing:
+    raise ValueError(f"master_long.csv is missing columns: {missing}")
+
+df["score"] = pd.to_numeric(df["score"], errors="coerce")
+df = df.dropna(subset=["score"]).copy()
+
+# Optional: enforce ordering
+llm_order = ["Claude-3.7", "Llama 3.1 8b-instruct", "Gemini-2.0", "GPT-5", "Deepseek-v3"]
+subtask_order = ["Conflict", "Unique", "Holistic", "Overlapping"]
+metric_order = ["Relevance", "Accuracy/Consistency", "Coherence", "Fluency", "Specialty"]
+level_order = ["Level 1", "Level 2", "Level 3", "Level 4"]
+
+# Keep only items that actually exist in the data
+llm_order = [x for x in llm_order if x in df["llm"].unique()]
+subtask_order = [x for x in subtask_order if x in df["subtask"].unique()]
+metric_order = [x for x in metric_order if x in df["metric"].unique()]
+level_order = [x for x in level_order if x in df["level"].unique()]
+
+# Colors for each LLM
+llm_colors = {
+    "Claude-3.7": "blue",
+    "Llama 3.1 8b-instruct": "red",
+    "Gemini-2.0": "green",
+    "GPT-5": "orange",
+    "Deepseek-v3": "purple"
+}
+
+
+# ============================================
+# Helper function for grouped bar charts
+# ============================================
+def make_grouped_barplot(data, category_col, category_order, title, xlabel, out_name):
+    # Mean score by category x llm
+    plot_df = (
+        data.groupby([category_col, "llm"], as_index=False)["score"]
+            .mean()
+            .pivot(index=category_col, columns="llm", values="score")
+            .reindex(category_order)
+    )
+
+    # Keep only llms present
+    llms_present = [x for x in llm_order if x in plot_df.columns]
+
+    x = np.arange(len(plot_df.index))
+    n_llms = len(llms_present)
+    width = 0.8 / n_llms
+
+    plt.figure(figsize=(12, 6))
+
+    for i, llm in enumerate(llms_present):
+        offset = (i - (n_llms - 1) / 2) * width
+        plt.bar(
+            x + offset,
+            plot_df[llm].values,
+            width=width,
+            label=llm,
+            color=llm_colors.get(llm, None),
+            alpha=0.75
+        )
+
+    plt.ylim(1, 5)
+    plt.title(title, fontsize=18)
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel("Scores (1–5 scale)", fontsize=14)
+    plt.xticks(x, plot_df.index, fontsize=12)
+    plt.grid(axis="y", linestyle="--", linewidth=0.5)
+    plt.legend(title="LLM")
+    plt.tight_layout()
+
+    out_path = os.path.join(OUT_DIR, out_name)
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.show()
+
+    print(f"Saved: {out_path}")
+    return out_path
+
+
+# ============================================
+# Figure 1: Overall LLM scores
+# ============================================
+overall_df = (
+    df.groupby("llm", as_index=False)["score"]
+      .mean()
+)
+
+overall_df["llm"] = pd.Categorical(overall_df["llm"], categories=llm_order, ordered=True)
+overall_df = overall_df.sort_values("llm")
+
+plt.figure(figsize=(10, 6))
+bars = plt.bar(
+    overall_df["llm"],
+    overall_df["score"],
+    color=[llm_colors.get(x, "gray") for x in overall_df["llm"]],
+    alpha=0.75
+)
+
+plt.ylim(1, 5)
+plt.title("Overall LLM Scores", fontsize=18)
+plt.xlabel("LLM", fontsize=14)
+plt.ylabel("Average Score (1–5 scale)", fontsize=14)
+plt.grid(axis="y", linestyle="--", linewidth=0.5)
+plt.tight_layout()
+
+overall_path = os.path.join(OUT_DIR, "figure_overall_llm_scores.png")
+plt.savefig(overall_path, dpi=300, bbox_inches="tight")
+plt.show()
+
+print(f"Saved: {overall_path}")
+
+# ============================================
+# Figure 2: Subtask graph (all LLMs within each subtask)
+# ============================================
+subtask_path = make_grouped_barplot(
+    data=df,
+    category_col="subtask",
+    category_order=subtask_order,
+    title="Comparison of LLMs Across Subtasks",
+    xlabel="Subtask",
+    out_name="figure_subtask_scores_by_llm.png"
+)
+
+# ============================================
+# Figure 3: Criteria graph (all LLMs within each metric)
+# ============================================
+metric_path = make_grouped_barplot(
+    data=df,
+    category_col="metric",
+    category_order=metric_order,
+    title="Comparison of LLMs Across Criteria",
+    xlabel="Criteria",
+    out_name="figure_criteria_scores_by_llm.png"
+)
+
+# ============================================
+# Figure 4: Level graph (all LLMs within each level)
+# ============================================
+level_path = make_grouped_barplot(
+    data=df,
+    category_col="level",
+    category_order=level_order,
+    title="Comparison of LLMs Across Levels",
+    xlabel="Level",
+    out_name="figure_level_scores_by_llm.png"
+)
+
+# ============================================
+# Download files
+# ============================================
+files.download(overall_path)
+files.download(subtask_path)
+files.download(metric_path)
+files.download(level_path)
